@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Logarithmic Loss</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h2 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h3 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h4 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h5 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h6 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html"></a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="home.html">Home</a>
+</li>
+<li>
+  <a href="index.html">Report</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Logarithmic Loss</h1>
+
+</div>
+
+
+<p>     </p>
+<p><strong>What is LogLoss?</strong></p>
+<p>LogLoss is an error calcualtion used to determine how close the predictions of a model are to the actual values.</p>
+<p><strong>When could you use it?</strong></p>
+<p>LogLoss can used for classification models that output a probability score.</p>
+<p><strong>Should it be big or small?</strong></p>
+<p>The goal is to reduce LogLoss when using it as a measure of model performance. A model that perfectly predicts probabilities would have a logloss of 0.</p>
+<p><strong>Why would you use this instead of AUC?</strong></p>
+<p>Unlike AUC, logloss is robust in the prescence of imbalanced classes. It takes into account the certainty of the prediciton.</p>
+<p><strong>Wait….how can accuracy be inaccurate?</strong></p>
+<p>When the target class has a large imbalance, for example 1% of the target class, then this can make accuracy dubious to interpret.</p>
+<p>For example, let’s say you have a dataset qith 10,000 rows and only 100 are the target. Then you could technically classify the whole set as “not the target” and get an AUC of 99% - which while technically correct, isn’t very useful.</p>
+<p>There are other ways to get around this like percision, recall and ther harmonic mean (F1 score), but logloss is a more direct measure of what you are attempting ot achieve - accurate probabilities.</p>
+<div id="what-is-it-measuring" class="section level3">
+<h3>What is it measuring?</h3>
+<p>Below you can see a representation of predicted and actual probabilities.</p>
+<p>The top example depicts a poor prediction, where there is a large difference between the predicted and acutal, this is results in a large LogLoss. This is good because the function is penalizing a wrong answer that the model is “confident” about.</p>
+<p>Conversely, the bottom example shows a good prediction that is close to the actual probability. This results in a low LogLoss, which is good because the model is rewarding a correct answer that the model is “confident” about.</p>
+<p><img src="LogLoss.png" width="70%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="formula" class="section level3">
+<h3>Formula</h3>
+<p>Below is the formula for LogLoss from wikipedia. It is calculated for every observation in the dataset and then averaged.</p>
+<p><img src="Function.png" width="40%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="simple-right" class="section level3">
+<h3>Simple right?</h3>
+<p>So, this all seems neat and simple. However, when I learned about it I became curious about two questions:</p>
+<ol style="list-style-type: decimal">
+<li><p>What does the distribution of LogLoss look like?    </p></li>
+<li><p>Why do we take the mean? Is that really the right choice?    </p></li>
+</ol>
+<p>   </p>
+</div>
+<div id="experiment-1-what-does-the-distribution-of-logloss-look-like" class="section level2">
+<h2>Experiment 1: What does the distribution of LogLoss look like?</h2>
+<p>   </p>
+<p>I decided to look into it by creating two models (one good, one bad) on a famous datascience dataset called the <a href="https://www.kaggle.com/c/titanic/data">Titanic dataset</a>.</p>
+<p>Specifically, I wanted to see what the distributions looked like for a good and poor predictive model.</p>
+<p>You can find all of the code I used to create these models on my <a href="https://github.com/emilyswebber">Github site</a>, the modeling itself will not be the focus of this posting.</p>
+<p><strong>General characteristics of the two models.</strong></p>
+<ul>
+<li>I used random forests to create both of the models.</li>
+<li>The “Good” model had engineered features and lots of trees.</li>
+<li>The “Poor” model had reduced features and some noise columns added in.    </li>
+</ul>
+<p><strong>Good Model stats</strong></p>
+<pre><code>FALSE 
+FALSE Call:
+FALSE  randomForest(formula = Survived ~ ., data = Boat3, mtyr = 10,      ntree = 10000) 
+FALSE                Type of random forest: classification
+FALSE                      Number of trees: 10000
+FALSE No. of variables tried at each split: 2
+FALSE 
+FALSE         OOB estimate of  error rate: 16.39%
+FALSE Confusion matrix:
+FALSE     0   1 class.error
+FALSE 0 506  43  0.07832423
+FALSE 1 103 239  0.30116959</code></pre>
+<p><strong>Poor Model stats</strong></p>
+<pre><code>FALSE 
+FALSE Call:
+FALSE  randomForest(formula = Survived ~ ., data = Boat4, mtyr = 10,      ntree = 1000) 
+FALSE                Type of random forest: classification
+FALSE                      Number of trees: 1000
+FALSE No. of variables tried at each split: 2
+FALSE 
+FALSE         OOB estimate of  error rate: 30.42%
+FALSE Confusion matrix:
+FALSE     0   1 class.error
+FALSE 0 459  90   0.1639344
+FALSE 1 181 161   0.5292398</code></pre>
+<p><em>You can see the OOB error rate is almost twice as high in “Poor” model.</em>    </p>
+<div id="distributions" class="section level3">
+<h3>Distributions</h3>
+<p>  First I wanted to see the predicted probability distributions for the two hypothetical models.</p>
+<p>   </p>
+<p><strong>Probabilities</strong>    </p>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="1152" style="display: block; margin: auto;" />    </p>
+<p>Then I wanted to plot the actual LogLoss distributions for the “Good” and “Poor” models.    </p>
+<p><strong>LogLoss</strong>    </p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="1152" style="display: block; margin: auto;" /></p>
+<p>   </p>
+</div>
+</div>
+<div id="experiment-2-whats-in-an-average" class="section level2">
+<h2>Experiment 2: What’s in an average?</h2>
+<p>   </p>
+<p>The distributions for the “Good” and “Poor” LogLoss are both skewed, which makes sense when you look back at the formula.</p>
+<p>   </p>
+<p><strong>If it isn’t a normal distribution, then why use the average at all?</strong></p>
+<p>   </p>
+<p>Before we get carried away, let’s do the math for the mean, standard deviation and median.    </p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Model</th>
+<th align="right">Mean</th>
+<th align="right">SD</th>
+<th align="right">Median</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Good</td>
+<td align="right">0.4523643</td>
+<td align="right">0.9512325</td>
+<td align="right">0.0887679</td>
+</tr>
+<tr class="even">
+<td align="left">Poor</td>
+<td align="right">0.5944586</td>
+<td align="right">0.5703845</td>
+<td align="right">0.3989077</td>
+</tr>
+<tr class="odd">
+<td align="left"> </td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+</tr>
+<tr class="even">
+<td align="left"> </td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+</tr>
+</tbody>
+</table>
+<p>You can see above that the standard devation (or spread) of the LogLoss is greater than the mean in the “Good” model and almost as large as the mean in the “Poor” model. This, combined with the shape of the distributions tells me that the mean may not be the best representation of LogLoss.</p>
+<p>If you look at the last columm, <strong>Median</strong>, these values represent the distributions better.</p>
+<p>       </p>
+<p><strong>Thank you for reading!</strong></p>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-91308049-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+<!-- Go to www.addthis.com/dashboard to customize your tools --> <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-589036a8549be1ce"></script>
+
+
+
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
