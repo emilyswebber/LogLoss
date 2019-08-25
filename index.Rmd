@@ -174,7 +174,12 @@ For example, let's say you have a dataset qith 10,000 rows and only 100 are the 
 There are other ways to get around this like percision, recall and ther harmonic mean (F1 score), but logloss is a more direct measure of what you are attempting ot achieve - accurate probabilities.
 
 
-### What is it measuring?
+&nbsp;
+&nbsp;
+&nbsp;
+
+
+### What does LogLoss really measure?
 
 Below you can see a representation of predicted and actual probabilities.  
 
@@ -193,11 +198,15 @@ knitr::include_graphics("LogLoss.png")
 ### Formula
  Below is the formula for LogLoss from wikipedia.  It is calculated for every observation in the dataset and then averaged. 
  
+
+
+ 
 ```{r  echo=FALSE, fig.cap="", out.width = '40%', fig.align = 'center'}
 knitr::include_graphics("Function.png")
 
 
 
+ 
 
 ```
 
@@ -256,6 +265,7 @@ RF_Bad
 ```
 
 *You can see the OOB error rate is almost twice as high in "Poor" model.*
+
 &nbsp;
 &nbsp; 
 
@@ -416,7 +426,7 @@ kable(MSD3)
 
 You can see above that the standard devation (or spread) of the LogLoss is greater than the mean in the "Good" model and almost as large as the mean in the "Poor" model.  This, combined with the shape of the distributions tells me that the mean may not be the best representation of LogLoss. 
 
-If you look at the last columm, **Median**, these values represent the distributions better. 
+If you look at the last columm, **Median**, these values appear to represent the distributions better. 
 
 &nbsp;
 &nbsp; 
@@ -424,7 +434,73 @@ If you look at the last columm, **Median**, these values represent the distribut
 &nbsp; 
 
 
-**Thank you for reading!**
+## Experiment 3: What about calculating LogLoss for each class?
+
+&nbsp;
+&nbsp; 
+
+The last two analyses lead me to ask another question.
+
+&nbsp; 
+
+3. Can we get median LogLoss for each class for each model and use them for comparison?
+
+&nbsp; 
+
+
+
+```{r fig.width= 5,  fig.height = 3, echo = FALSE, warning = FALSE,  fig.align='center', comment=FALSE}
+
+x <- setDT(LL1)[, lapply(.SD, median), by=.(Survive), 
+                .SDcols=c("LogLoss")]
+
+
+y <- setDT(LL2)[, lapply(.SD, median), by=.(Survive), 
+                .SDcols=c("LogLoss")]
+
+colnames(x)[colnames(x)=="LogLoss"] <- "Good_LogLoss"
+colnames(y)[colnames(y)=="LogLoss"] <- "Poor_LogLoss"
+
+
+x$Poor_LogLoss <- y$Poor_LogLoss
+
+x$Perc_Diff_LogLoss <- abs(x$Good_LogLoss - x$Poor_LogLoss)/ 
+  (x$Good_LogLoss + x$Poor_LogLoss)
+
+kable(x)
+```
+
+
+&nbsp;
+&nbsp; 
+
+**It turns out yes, yes you can do that.  The "Good" model had a better LogLoss for both the minority and majority calss. This is a viable way to compare model performance in classification problems, and should be used over techniques like AUC. **
+
+&nbsp;
+&nbsp; 
+
+
+### Conclusions
+&nbsp;
+&nbsp; 
+1. LogLoss is neat!
+&nbsp;
+&nbsp; 
+
+2. LogLoss reflects performance of "Good" vs. "Poor" models.
+&nbsp;
+&nbsp; 
+
+3. The median may be a better choice than the average. 
+&nbsp;
+&nbsp; 
+
+4. You can break  LogLoss down even further to look at the minority and majority class. 
+
+&nbsp;
+&nbsp; 
+
+### Thank you for reading!
 
 
 <!--html_preserve-->
