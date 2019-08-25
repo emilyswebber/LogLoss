@@ -151,7 +151,7 @@ max(LogLoss_Worst)
 
 **What is LogLoss?**
 
-LogLoss is an error calcualtion used to determine how close the predictions of a model are to the actual values. 
+LogLoss is an error calculation used to determine how close the predictions of a model are to the actual values. 
 
 **When could you use it?** 
 
@@ -159,19 +159,19 @@ LogLoss can used for classification models that output a probability score.
 
 **Should it be big or small?**
 
-The goal is to reduce LogLoss when using it as a measure of model performance.  A model that perfectly predicts probabilities would have a logloss of 0. 
+The goal is to reduce LogLoss when using it as a measure of model performance.  A model that perfectly predicts probabilities would have a LogLoss of 0. 
 
 **Why would you use this instead of AUC?**
 
-Unlike AUC, logloss is robust in the prescence of imbalanced classes. It takes into account the certainty of the prediciton.  
+Unlike AUC, LogLoss is robust in the presence of imbalanced classes. It takes into account the certainty of the prediction.  
 
 **Wait....how can accuracy be inaccurate?**
 
 When the target class has a large imbalance, for example 1% of the target class, then this can make accuracy dubious to interpret. 
 
-For example, let's say you have a dataset qith 10,000 rows and only 100 are the target.  Then you could technically classify the whole set as "not the target" and get an AUC of 99% - which while technically correct, isn't very useful. 
+For example, let's say you have a dataset with 10,000 rows and only 100 are the target.  Then you could technically classify the whole set as "not the target" and get an AUC of 99% - which while technically correct, isn't very useful. 
 
-There are other ways to get around this like percision, recall and ther harmonic mean (F1 score), but logloss is a more direct measure of what you are attempting ot achieve - accurate probabilities.
+There are other ways to get around this like precision, recall and their harmonic mean (F1 score), but LogLoss is a more direct measure of what you are attempting to achieve - accurate probabilities.
 
 
 &nbsp;
@@ -183,7 +183,7 @@ There are other ways to get around this like percision, recall and ther harmonic
 
 Below you can see a representation of predicted and actual probabilities.  
 
-  The top example depicts a poor prediction, where there is a large difference between the predicted and acutal, this is results in a large LogLoss.  This is good because the function is penalizing a wrong answer that the model is "confident" about. 
+  The top example depicts a poor prediction, where there is a large difference between the predicted and actual, this is results in a large LogLoss.  This is good because the function is penalizing a wrong answer that the model is "confident" about. 
 
   Conversely, the bottom example shows a good prediction that is close to the actual probability.  This results in a low LogLoss, which is good because the model is rewarding a correct answer that the model is "confident" about.
   
@@ -234,7 +234,7 @@ So, this all seems neat and simple.  However, when I learned about it I became c
 &nbsp; 
 
 
-I decided to look into it by creating two models (one good, one bad) on a famous datascience dataset called the [Titanic dataset](https://www.kaggle.com/c/titanic/data).
+I decided to look into it by creating two models (one good, one bad) on a famous data science dataset called the [Titanic dataset](https://www.kaggle.com/c/titanic/data).
 
 Specifically, I wanted to see what the distributions looked like for a good and poor predictive model. 
 
@@ -424,9 +424,9 @@ kable(MSD3)
 &nbsp;
 &nbsp; 
 
-You can see above that the standard devation (or spread) of the LogLoss is greater than the mean in the "Good" model and almost as large as the mean in the "Poor" model.  This, combined with the shape of the distributions tells me that the mean may not be the best representation of LogLoss. 
+You can see above that the standard deviation (or spread) of the LogLoss is greater than the mean in the "Good" model and almost as large as the mean in the "Poor" model.  This - combined with the shape of the distributions tells me that the mean may not be the best representation of LogLoss. 
 
-If you look at the last columm, **Median**, these values appear to represent the distributions better. 
+If you look at the last column, **Median**, these values appear to represent the distributions better. 
 
 &nbsp;
 &nbsp; 
@@ -474,7 +474,7 @@ kable(x)
 &nbsp;
 &nbsp; 
 
-**It turns out yes, yes you can do that.  The "Good" model had a better LogLoss for both the minority and majority calss. This is a viable way to compare model performance in classification problems, and should be used over techniques like AUC. **
+**It turns out that you can do that.  The "Good" model had a better LogLoss for both the minority and majority class. This is a viable way to compare model performance in classification problems, and should be used over techniques like AUC. **
 
 &nbsp;
 &nbsp; 
@@ -495,7 +495,7 @@ kable(x)
 &nbsp;
 &nbsp; 
 
-4. You can break  LogLoss down even further to look at the minority and majority class. 
+4. You can segment LogLoss down even further to look at the target and non-target class. This can tell you if the model is succeeding or failing at predicting one of the variable classes.
 
 &nbsp;
 &nbsp; 
