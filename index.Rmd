@@ -17,15 +17,11 @@ library(data.table)
 library(ggplot2)
 library(gridExtra)
 
-
 #Get Train Set Ready **********
 Boat <- read.csv("train.csv")
 Boat3 <- Boat
 
-
 #Feature Engineering ****************
-
-
 
 #Other variable cleaning and imputing
 Boat3$Embarked[Boat3$Embarked == ""] <- "C"
@@ -37,14 +33,11 @@ Boat3$PassengerId <- NULL
 
 Boat3$Age[is.na(Boat3$Age)] <- median(Boat3$Age, na.rm = TRUE)
 
-
 #Deck and Cabin Imputation
 Boat3$Cabin <- NULL
 Boat3$Survived <- as.factor(Boat3$Survived)
 Boat4 <- Boat3
 #Save Set for Demimished model
-
-
 
 #RandomForest******************
 
@@ -52,15 +45,12 @@ library(randomForest)
 
 set.seed(42)
 
-
 #Good*********
-
 
 RF <- randomForest(Survived ~., 
                        Boat3,
                        mtyr = 10,
                        ntree = 10000)
-
 RF
 
 vote_RF <- RF$votes
@@ -70,11 +60,9 @@ x2 <- unlist(x2)
 
 Boat3$Pred <- as.numeric(x2)
 
-
 #Not Good******
 
 #Dropped Columns + Noise
-
 
 noise <- rbinom(891,10,0.1)    
 noise2 <- rbinom(891,10,0.1)    
@@ -100,7 +88,6 @@ y2 <- as.data.frame(y)
 y2 <- unlist(y2)
 
 Boat4$Pred <- as.numeric(y2)
-
 
 #LogLoss***************************
 library(Metrics)
@@ -443,7 +430,7 @@ The last two analyses lead me to ask another question.
 
 &nbsp; 
 
-3. Can we get median LogLoss for each class for each model and use them for comparison?
+Can we get median LogLoss for each class for each model and use them for comparison?
 
 &nbsp; 
 
@@ -483,19 +470,17 @@ kable(x)
 ### Conclusions
 &nbsp;
 &nbsp; 
-1. LogLoss is neat!
+
+
+1. LogLoss reflects performance of "Good" vs. "Poor" models.
 &nbsp;
 &nbsp; 
 
-2. LogLoss reflects performance of "Good" vs. "Poor" models.
+2. The median may be a better choice than the average. 
 &nbsp;
 &nbsp; 
 
-3. The median may be a better choice than the average. 
-&nbsp;
-&nbsp; 
-
-4. You can segment LogLoss down even further to look at the target and non-target class. This can tell you if the model is succeeding or failing at predicting one of the variable classes.
+3. You can segment LogLoss down even further to look at the target and non-target class. This can tell you if the model is succeeding or failing at predicting one of the variable classes.
 
 &nbsp;
 &nbsp; 
